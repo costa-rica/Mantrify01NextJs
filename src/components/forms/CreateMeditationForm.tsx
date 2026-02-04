@@ -222,8 +222,8 @@ export default function CreateMeditationForm() {
         }),
       });
 
-      const refresh = await getAllMantras(true);
-      dispatch(setMeditations(refresh.mantras));
+       const refresh = await getAllMantras(true);
+       dispatch(setMeditations(refresh.mantras ?? []));
       setToast({ message: "Meditation submitted successfully.", variant: "success" });
       setTitle("");
       setDescription("");

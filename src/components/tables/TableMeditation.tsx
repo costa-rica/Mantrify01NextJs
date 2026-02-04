@@ -31,7 +31,7 @@ export default function TableMeditation() {
 
     try {
       const response = await getAllMantras(isAuthenticated);
-      dispatch(setMeditations(response.mantras));
+      dispatch(setMeditations(response.mantras ?? []));
     } catch (err: any) {
       const message =
         err?.response?.data?.error?.message ||
@@ -45,13 +45,14 @@ export default function TableMeditation() {
   }, [fetchMeditations]);
 
   const visibleRows = useMemo(() => {
+    const safeMeditations = Array.isArray(meditations) ? meditations : [];
     if (!isAuthenticated) {
-      return meditations.filter(
+      return safeMeditations.filter(
         (meditation) => meditation.visibility?.toLowerCase() === "public",
       );
     }
 
-    return meditations.filter(
+    return safeMeditations.filter(
       (meditation) =>
         meditation.visibility?.toLowerCase() === "public" || meditation.isOwned,
     );

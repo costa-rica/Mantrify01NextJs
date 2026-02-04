@@ -11,8 +11,8 @@ export default function StoreProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const storeRef = useRef<AppStore>();
-  const persistorRef = useRef<any>();
+  const storeRef = useRef<AppStore | null>(null);
+  const persistorRef = useRef<ReturnType<typeof persistStore> | null>(null);
 
   if (!storeRef.current) {
     // Create the store instance the first time this renders
@@ -22,7 +22,7 @@ export default function StoreProvider({
 
   return (
     <Provider store={storeRef.current}>
-      <PersistGate loading={null} persistor={persistorRef.current}>
+      <PersistGate loading={null} persistor={persistorRef.current!}>
         {children}
       </PersistGate>
     </Provider>
