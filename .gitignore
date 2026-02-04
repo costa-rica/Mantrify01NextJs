@@ -3,11 +3,27 @@
 
 # Environment files
 .env
+.env.local
+.env*.local
 
 # Dependencies
 node_modules/
 
 # Build output
 dist/
+.next/
+out/
+
+# Logs
+logs/
+*.log
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Testing
+coverage/
+.nyc_output/
 
 
