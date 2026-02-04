@@ -1,41 +1,38 @@
-import Image from 'next/image'
+import TableMeditation from "@/components/tables/TableMeditation";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-calm-50 to-primary-50">
-      <div className="container mx-auto px-4 py-16">
-        <div className="flex flex-col items-center justify-center text-center">
-          <div className="mb-8">
-            <Image
-              src="/images/mantrifyLogo02.png"
-              alt="Mantrify Logo"
-              width={200}
-              height={200}
-              priority
-              className="mx-auto"
-            />
-          </div>
-
-          <h1 className="text-5xl md:text-6xl font-display font-bold text-calm-900 mb-4">
-            Welcome to Mantrify
-          </h1>
-
-          <p className="text-xl md:text-2xl text-calm-700 mb-8 max-w-2xl">
-            Create personalized lightly guided meditations that combine purposeful affirmations
-            with contemplative silences
+    <main className="min-h-screen bg-gradient-to-b from-calm-50 via-white to-primary-50">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-10 md:px-8 md:py-16">
+        <header className="rounded-3xl border border-calm-200/70 bg-white/80 p-8 shadow-sm backdrop-blur">
+          <p className="text-xs uppercase tracking-[0.25em] text-calm-500">
+            Mantrify
           </p>
+          <h1 className="mt-3 text-4xl font-display font-semibold text-calm-900 md:text-5xl">
+            Create lightly guided meditations
+          </h1>
+          <p className="mt-3 max-w-2xl text-base text-calm-600 md:text-lg">
+            Balance purposeful affirmations with spacious silence to design
+            meditations that feel personal, grounded, and restorative.
+          </p>
+        </header>
 
-          <div className="card max-w-3xl w-full">
-            <h2 className="section-heading text-center">Phase 1 Complete!</h2>
-            <p className="text-calm-600 text-center">
-              Next.js project successfully initialized with TypeScript, Tailwind CSS, and Winston logging.
-            </p>
-            <div className="mt-4 text-sm text-calm-500 text-center">
-              Ready to build Phase 2: Core Infrastructure
-            </div>
+        <TableMeditation />
+
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-display font-semibold text-calm-900">
+              Create New Meditation
+            </h2>
+            <span className="text-sm text-calm-500">For registered users</span>
           </div>
-        </div>
+          <div className="rounded-3xl border border-dashed border-calm-200 bg-white/70 p-6 shadow-sm">
+            <p className="text-sm text-calm-500">
+              Creation form will appear here after authentication.
+            </p>
+          </div>
+        </section>
       </div>
     </main>
-  )
+  );
 }

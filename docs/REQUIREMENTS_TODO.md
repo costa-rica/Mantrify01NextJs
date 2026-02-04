@@ -186,59 +186,59 @@ This document provides a detailed, phase-based task list for building the Mantri
 
 ### 4.1 Homepage Layout
 
-- [ ] Create `src/app/page.tsx`
-- [ ] Implement vertical stacked sections layout
-- [ ] Add responsive container with proper padding
+- [x] Create `src/app/page.tsx`
+- [x] Implement vertical stacked sections layout
+- [x] Add responsive container with proper padding
 
 ### 4.2 Meditation Table Component (Non-Authenticated Users)
 
-- [ ] Create `src/components/tables/MeditationTable.tsx`
-- [ ] Implement expandable/collapsible section with "Meditations" heading
-- [ ] Default state: expanded
-- [ ] Fetch data from `GET /mantras/all` on component mount
-- [ ] Display columns for all users:
+- [x] Create `src/components/tables/TableMeditation.tsx`
+- [x] Implement expandable/collapsible section with "Meditations" heading
+- [x] Default state: expanded
+- [x] Fetch data from `GET /mantras/all` on component mount
+- [x] Display columns for all users:
   - Title
   - Play button (▶)
   - Number of listens
-- [ ] Make table responsive:
+- [x] Make table responsive:
   - Scrollable on small screens
   - Fixed header
   - Smaller text size for mobile
-- [ ] Implement loading state (spinner/skeleton)
-- [ ] Implement error state with retry button
+- [x] Implement loading state (spinner/skeleton)
+- [x] Implement error state with retry button
 
 ### 4.3 Audio Player Integration
 
-- [ ] Create `src/components/AudioPlayer.tsx`
-- [ ] Implement HTML5 audio player
-- [ ] Connect to `GET /mantras/:id/stream` endpoint
-- [ ] Add token to Authorization header if user is authenticated
-- [ ] Support play/pause controls
-- [ ] Show loading state while buffering
-- [ ] Handle playback errors gracefully
-- [ ] Track when play button is clicked (automatically tracked by API)
+- [x] Create `src/components/AudioPlayer.tsx`
+- [x] Implement HTML5 audio player
+- [x] Connect to `GET /mantras/:id/stream` endpoint
+- [x] Add token to Authorization header if user is authenticated
+- [x] Support play/pause controls
+- [x] Show loading state while buffering
+- [x] Handle playback errors gracefully
+- [x] Track when play button is clicked (automatically tracked by API)
 
 ### 4.4 Meditation Table (Authenticated Users)
 
-- [ ] Add "Favorite" column with star icon (⭐) for authenticated users
-- [ ] Display yellow star if favorited, white/outline if not
-- [ ] Fetch favorites status from API response
-- [ ] Implement star toggle functionality:
+- [x] Add "Favorite" column with star icon (⭐) for authenticated users
+- [x] Display yellow star if favorited, white/outline if not
+- [x] Fetch favorites status from API response
+- [x] Implement star toggle functionality:
   - On click: call `POST /mantras/favorite/:mantraId/:trueOrFalse`
   - Toggle star color immediately (optimistic update)
   - Handle API errors and revert on failure
-- [ ] Show user's own meditations with "Delete" button
-- [ ] Filter to show public meditations + user's private meditations
-- [ ] Pass `includePrivate=true` when authenticated
+- [x] Show user's own meditations with "Delete" button
+- [x] Filter to show public meditations + user's private meditations
+- [x] Pass `includePrivate=true` when authenticated
 
 ### 4.5 Delete Meditation Functionality
 
-- [ ] Create `src/components/modals/ModalConfirmDelete.tsx`
-- [ ] Show confirmation dialog before deleting
-- [ ] Connect to `DELETE /mantras/:id` endpoint
-- [ ] Remove meditation from table on successful delete
-- [ ] Show success/error toast notification
-- [ ] Handle 403 error (not owner) and 404 (not found)
+- [x] Create `src/components/modals/ModalConfirmDelete.tsx`
+- [x] Show confirmation dialog before deleting
+- [x] Connect to `DELETE /mantras/:id` endpoint
+- [x] Remove meditation from table on successful delete
+- [x] Show success/error toast notification
+- [x] Handle 403 error (not owner) and 404 (not found)
 
 ---
 
