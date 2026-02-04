@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter, Outfit } from 'next/font/google'
 import '@/styles/globals.css'
 import StoreProvider from '@/store/StoreProvider'
+import AppShell from '@/components/AppShell'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -40,7 +41,7 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${outfit.variable}`}>
       <body className="font-sans">
         <StoreProvider>
-          {children}
+          <AppShell>{children}</AppShell>
         </StoreProvider>
       </body>
     </html>
