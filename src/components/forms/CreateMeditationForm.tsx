@@ -41,10 +41,6 @@ export default function CreateMeditationForm() {
   const [toast, setToast] = useState<{ message: string; variant: "success" | "error" } | null>(null);
   const maxDescriptionLength = 300;
 
-  if (!isAuthenticated) {
-    return null;
-  }
-
   useEffect(() => {
     if (!isAuthenticated) return;
     const fetchSounds = async () => {
@@ -68,6 +64,10 @@ export default function CreateMeditationForm() {
 
     fetchSounds();
   }, [isAuthenticated]);
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   const handleToggle = () => {
     setIsExpanded((prev) => {

@@ -21,9 +21,15 @@ export default function TableMeditation() {
   );
   const { isAuthenticated } = useAppSelector((state) => state.auth);
   const [isExpanded, setIsExpanded] = useState(true);
-  const [deleteTarget, setDeleteTarget] = useState<{ id: number; title: string } | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{
+    id: number;
+    title: string;
+  } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [toast, setToast] = useState<{ message: string; variant: "success" | "error" } | null>(null);
+  const [toast, setToast] = useState<{
+    message: string;
+    variant: "success" | "error";
+  } | null>(null);
 
   const fetchMeditations = useCallback(async () => {
     dispatch(setLoading(true));
@@ -58,7 +64,10 @@ export default function TableMeditation() {
     );
   }, [isAuthenticated, meditations]);
 
-  const handleToggleFavorite = async (mantraId: number, currentValue?: boolean) => {
+  const handleToggleFavorite = async (
+    mantraId: number,
+    currentValue?: boolean,
+  ) => {
     if (!isAuthenticated) return;
     const nextValue = !currentValue;
     dispatch(toggleFavorite({ id: mantraId, isFavorite: nextValue }));
@@ -82,11 +91,17 @@ export default function TableMeditation() {
     } catch (err: any) {
       const status = err?.response?.status;
       if (status === 403) {
-        setToast({ message: "You can only delete your own meditations.", variant: "error" });
+        setToast({
+          message: "You can only delete your own meditations.",
+          variant: "error",
+        });
       } else if (status === 404) {
         setToast({ message: "Meditation not found.", variant: "error" });
       } else {
-        setToast({ message: "Unable to delete meditation. Please try again.", variant: "error" });
+        setToast({
+          message: "Unable to delete meditation. Please try again.",
+          variant: "error",
+        });
       }
     } finally {
       setIsDeleting(false);
@@ -178,13 +193,17 @@ export default function TableMeditation() {
                       <th className="px-4 py-3 font-semibold">Title</th>
                       <th className="px-4 py-3 font-semibold">Play</th>
                       {isAuthenticated && (
-                        <th className="px-4 py-3 text-center font-semibold">Favorite</th>
+                        <th className="px-4 py-3 text-center font-semibold">
+                          Favorite
+                        </th>
                       )}
                       <th className="px-4 py-3 text-right font-semibold">
                         Listens
                       </th>
                       {isAuthenticated && (
-                        <th className="px-4 py-3 text-right font-semibold">Delete</th>
+                        <th className="px-4 py-3 text-right font-semibold">
+                          Delete
+                        </th>
                       )}
                     </tr>
                   </thead>
@@ -208,14 +227,20 @@ export default function TableMeditation() {
                           {meditation.title}
                         </td>
                         <td className="px-4 py-3">
-                          <AudioPlayer mantraId={meditation.id} title={meditation.title} />
+                          <AudioPlayer
+                            mantraId={meditation.id}
+                            title={meditation.title}
+                          />
                         </td>
                         {isAuthenticated && (
                           <td className="px-4 py-3 text-center">
                             <button
                               type="button"
                               onClick={() =>
-                                handleToggleFavorite(meditation.id, meditation.isFavorite)
+                                handleToggleFavorite(
+                                  meditation.id,
+                                  meditation.isFavorite,
+                                )
                               }
                               className={`inline-flex h-8 w-8 items-center justify-center rounded-full border text-sm transition ${
                                 meditation.isFavorite
@@ -233,7 +258,7 @@ export default function TableMeditation() {
                           </td>
                         )}
                         <td className="px-4 py-3 text-right text-calm-600">
-                          {meditation.listens}
+                          {meditation.listenCount}
                         </td>
                         {isAuthenticated && (
                           <td className="px-4 py-3 text-right">
@@ -241,7 +266,10 @@ export default function TableMeditation() {
                               <button
                                 type="button"
                                 onClick={() =>
-                                  setDeleteTarget({ id: meditation.id, title: meditation.title })
+                                  setDeleteTarget({
+                                    id: meditation.id,
+                                    title: meditation.title,
+                                  })
                                 }
                                 className="rounded-full border border-red-200 px-3 py-1 text-xs font-semibold text-red-500 transition hover:border-red-300"
                               >

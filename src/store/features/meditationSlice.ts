@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface MantraElement {
   id: number;
@@ -19,7 +19,7 @@ export interface Meditation {
   visibility: string;
   createdAt: string;
   updatedAt: string;
-  listens: number;
+  listenCount: number;
   isFavorite?: boolean;
   isOwned?: boolean;
 }
@@ -37,7 +37,7 @@ const initialState: MeditationState = {
 };
 
 export const meditationSlice = createSlice({
-  name: 'meditation',
+  name: "meditation",
   initialState,
   reducers: {
     setMeditations: (state, action: PayloadAction<Meditation[]>) => {
@@ -50,11 +50,16 @@ export const meditationSlice = createSlice({
     },
     deleteMeditation: (state, action: PayloadAction<number>) => {
       state.meditations = state.meditations.filter(
-        (meditation) => meditation.id !== action.payload
+        (meditation) => meditation.id !== action.payload,
       );
     },
-    toggleFavorite: (state, action: PayloadAction<{ id: number; isFavorite: boolean }>) => {
-      const meditation = state.meditations.find((m) => m.id === action.payload.id);
+    toggleFavorite: (
+      state,
+      action: PayloadAction<{ id: number; isFavorite: boolean }>,
+    ) => {
+      const meditation = state.meditations.find(
+        (m) => m.id === action.payload.id,
+      );
       if (meditation) {
         meditation.isFavorite = action.payload.isFavorite;
       }
