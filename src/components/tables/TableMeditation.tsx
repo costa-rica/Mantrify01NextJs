@@ -19,7 +19,7 @@ export default function TableMeditation() {
   const { meditations, loading, error } = useAppSelector(
     (state) => state.meditation,
   );
-  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, accessToken } = useAppSelector((state) => state.auth);
   const [isExpanded, setIsExpanded] = useState(true);
   const [deleteTarget, setDeleteTarget] = useState<{
     id: number;
@@ -36,7 +36,7 @@ export default function TableMeditation() {
     dispatch(setError(null));
 
     try {
-      const response = await getAllMantras(isAuthenticated);
+      const response = await getAllMantras(isAuthenticated && !!accessToken, accessToken);
       dispatch(setMeditations(response.mantras ?? []));
     } catch (err: any) {
       const message =
@@ -44,7 +44,7 @@ export default function TableMeditation() {
         "Unable to load meditations. Please try again.";
       dispatch(setError(message));
     }
-  }, [dispatch, isAuthenticated]);
+  }, [accessToken, dispatch, isAuthenticated]);
 
   useEffect(() => {
     fetchMeditations();
@@ -218,11 +218,17 @@ export default function TableMeditation() {
                         </td>
                       </tr>
                     )}
-                    {visibleRows.map((meditation) => (
-                      <tr
-                        key={meditation.id}
-                        className="border-t border-calm-100 text-calm-700"
-                      >
+                    {visibleRows.map((meditation) => {
+                      const listenCount =
+                        (meditation as { listenCount?: number }).listenCount ??
+                        (meditation as { listens?: number }).listens ??
+                        0;
+
+                      return (
+                        <tr
+                          key={meditation.id}
+                          className="border-t border-calm-100 text-calm-700"
+                        >
                         <td className="px-4 py-3 font-medium text-calm-900">
                           {meditation.title}
                         </td>
@@ -258,7 +264,7 @@ export default function TableMeditation() {
                           </td>
                         )}
                         <td className="px-4 py-3 text-right text-calm-600">
-                          {meditation.listenCount}
+                          {listenCount}
                         </td>
                         {isAuthenticated && (
                           <td className="px-4 py-3 text-right">
@@ -281,7 +287,8 @@ export default function TableMeditation() {
                           </td>
                         )}
                       </tr>
-                    ))}
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

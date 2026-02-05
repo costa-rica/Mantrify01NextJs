@@ -11,7 +11,7 @@ import { validateMeditationTitle, validatePauseDuration, validateSpeed } from "@
 
 export default function CreateMeditationForm() {
   const dispatch = useAppDispatch();
-  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, accessToken } = useAppSelector((state) => state.auth);
   const [isExpanded, setIsExpanded] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -64,10 +64,6 @@ export default function CreateMeditationForm() {
 
     fetchSounds();
   }, [isAuthenticated]);
-
-  if (!isAuthenticated) {
-    return null;
-  }
 
   const handleToggle = () => {
     setIsExpanded((prev) => {
@@ -222,7 +218,7 @@ export default function CreateMeditationForm() {
         }),
       });
 
-       const refresh = await getAllMantras(true);
+       const refresh = await getAllMantras(true, accessToken);
        dispatch(setMeditations(refresh.mantras ?? []));
       setToast({ message: "Meditation submitted successfully.", variant: "success" });
       setTitle("");
@@ -238,6 +234,10 @@ export default function CreateMeditationForm() {
       setIsSubmitting(false);
     }
   };
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <section className="space-y-4">

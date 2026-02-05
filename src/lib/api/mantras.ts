@@ -31,9 +31,14 @@ export interface DeleteMantraResponse {
 }
 
 // GET /mantras/all
-export const getAllMantras = async (includePrivate: boolean = false): Promise<GetAllMantrasResponse> => {
+export const getAllMantras = async (
+  includePrivate: boolean = false,
+  accessToken?: string | null
+): Promise<GetAllMantrasResponse> => {
   const url = includePrivate ? '/mantras/all?includePrivate=true' : '/mantras/all';
-  const response = await apiClient.get<GetAllMantrasResponse>(url);
+  const response = await apiClient.get<GetAllMantrasResponse>(url, {
+    headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
+  });
   const data = response.data;
   return {
     ...data,
