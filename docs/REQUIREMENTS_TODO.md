@@ -449,35 +449,35 @@ This document provides a detailed, phase-based task list for building the Mantri
 
 ### 9.1 Queuer Section
 
-- [ ] Create expandable/collapsible section with "Queuer" heading
-- [ ] Default state: collapsed
-- [ ] Fetch data from `GET /admin/queuer` on expand
+- [x] Create expandable/collapsible section with "Queuer" heading
+- [x] Default state: collapsed
+- [x] Fetch data from `GET /admin/queuer` on expand
 
 ### 9.2 TableAdminQueuer Component
 
-- [ ] Create `src/components/tables/TableAdminQueuer.tsx`
-- [ ] Display columns:
+- [x] Create `src/components/tables/TableAdminQueuer.tsx`
+- [x] Display columns:
   - ID
   - User ID
   - Status (queued, started, elevenlabs, concatenator, done)
   - Job Filename
   - Created At (formatted timestamp)
   - Delete button
-- [ ] Color-code status values:
+- [x] Color-code status values:
   - queued: gray
   - started: blue
   - elevenlabs: purple
   - concatenator: orange
   - done: green
-- [ ] Make table responsive
+- [x] Make table responsive
 
 ### 9.3 Delete Queue Record Functionality
 
-- [ ] Add delete button for each queue record
-- [ ] Show confirmation modal
-- [ ] Connect to `DELETE /admin/queuer/:id` endpoint
-- [ ] Remove from table on success
-- [ ] Note: This doesn't delete the meditation, just the queue record
+- [x] Add delete button for each queue record
+- [x] Show confirmation modal
+- [x] Connect to `DELETE /admin/queuer/:id` endpoint
+- [x] Remove from table on success
+- [x] Note: This doesn't delete the meditation, just the queue record
 
 ---
 
