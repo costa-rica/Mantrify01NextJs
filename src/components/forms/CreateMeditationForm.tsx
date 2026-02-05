@@ -244,6 +244,7 @@ export default function CreateMeditationForm() {
       <button
         type="button"
         onClick={handleToggle}
+        disabled={isSubmitting}
         className="flex w-full items-center justify-between rounded-2xl border border-calm-200/70 bg-white/80 px-4 py-3 text-left shadow-sm transition hover:border-primary-200"
         aria-expanded={isExpanded}
       >
@@ -365,6 +366,7 @@ export default function CreateMeditationForm() {
               <button
                 type="button"
                 onClick={handleAddRow}
+                disabled={isSubmitting}
                 className="rounded-full border border-primary-200 px-4 py-2 text-xs font-semibold text-primary-700 transition hover:border-primary-300"
               >
                 Add Row
@@ -408,6 +410,7 @@ export default function CreateMeditationForm() {
                           }));
                         })()
                       }
+                      disabled={isSubmitting}
                       className="rounded-full border border-calm-200 bg-white px-3 py-2 text-xs font-semibold text-calm-700"
                     >
                       <option value="text">Text</option>
@@ -440,23 +443,24 @@ export default function CreateMeditationForm() {
                       </div>
                       <div>
                         <label className="text-xs font-semibold text-calm-600">Speed (0.7-1.3)</label>
-                        <input
-                          type="number"
-                          step="0.1"
-                          min="0.7"
-                          max="1.3"
-                          value={row.speed}
-                          onChange={(event) => {
-                            updateRow(row.id, { speed: event.target.value });
-                            if (rowErrors[row.id]?.speed) {
-                              clearRowError(row.id, "speed");
-                            }
-                          }}
-                          className={`mt-2 w-full rounded-2xl border px-3 py-2 text-xs text-calm-900 outline-none transition focus:border-primary-300 focus:ring-2 focus:ring-primary-100 ${
-                            rowErrors[row.id]?.speed ? "border-red-300" : "border-calm-200"
-                          }`}
-                          placeholder="1.0"
-                        />
+                      <input
+                        type="number"
+                        step="0.1"
+                        min="0.7"
+                        max="1.3"
+                        value={row.speed}
+                        onChange={(event) => {
+                          updateRow(row.id, { speed: event.target.value });
+                          if (rowErrors[row.id]?.speed) {
+                            clearRowError(row.id, "speed");
+                          }
+                        }}
+                        disabled={isSubmitting}
+                        className={`mt-2 w-full rounded-2xl border px-3 py-2 text-xs text-calm-900 outline-none transition focus:border-primary-300 focus:ring-2 focus:ring-primary-100 ${
+                          rowErrors[row.id]?.speed ? "border-red-300" : "border-calm-200"
+                        }`}
+                        placeholder="1.0"
+                      />
                         {rowErrors[row.id]?.speed && (
                           <p className="mt-1 text-xs text-red-500">{rowErrors[row.id]?.speed}</p>
                         )}
@@ -478,6 +482,7 @@ export default function CreateMeditationForm() {
                             clearRowError(row.id, "pauseDuration");
                           }
                         }}
+                        disabled={isSubmitting}
                         className={`mt-2 w-full rounded-2xl border px-3 py-2 text-xs text-calm-900 outline-none transition focus:border-primary-300 focus:ring-2 focus:ring-primary-100 ${
                           rowErrors[row.id]?.pauseDuration ? "border-red-300" : "border-calm-200"
                         }`}
@@ -502,7 +507,7 @@ export default function CreateMeditationForm() {
                             clearRowError(row.id, "soundFile");
                           }
                         }}
-                        disabled={soundsLoading}
+                        disabled={soundsLoading || isSubmitting}
                         className={`mt-2 w-full rounded-2xl border px-3 py-2 text-xs text-calm-900 outline-none transition focus:border-primary-300 focus:ring-2 focus:ring-primary-100 ${
                           rowErrors[row.id]?.soundFile ? "border-red-300" : "border-calm-200"
                         }`}
@@ -526,7 +531,7 @@ export default function CreateMeditationForm() {
                     <button
                       type="button"
                       onClick={() => moveRow(row.id, "up")}
-                      disabled={index === 0}
+                      disabled={index === 0 || isSubmitting}
                       className="rounded-full border border-calm-200 px-3 py-1 text-xs font-semibold text-calm-600 transition hover:border-primary-200 disabled:cursor-not-allowed disabled:text-calm-300"
                     >
                       Move Up
@@ -534,7 +539,7 @@ export default function CreateMeditationForm() {
                     <button
                       type="button"
                       onClick={() => moveRow(row.id, "down")}
-                      disabled={index === rows.length - 1}
+                      disabled={index === rows.length - 1 || isSubmitting}
                       className="rounded-full border border-calm-200 px-3 py-1 text-xs font-semibold text-calm-600 transition hover:border-primary-200 disabled:cursor-not-allowed disabled:text-calm-300"
                     >
                       Move Down
@@ -542,7 +547,8 @@ export default function CreateMeditationForm() {
                     <button
                       type="button"
                       onClick={() => handleDeleteRow(row.id)}
-                      className="rounded-full border border-red-200 px-3 py-1 text-xs font-semibold text-red-500 transition hover:border-red-300"
+                      disabled={isSubmitting}
+                      className="rounded-full border border-red-200 px-3 py-1 text-xs font-semibold text-red-500 transition hover:border-red-300 disabled:cursor-not-allowed disabled:border-red-100 disabled:text-red-300"
                     >
                       Delete Row
                     </button>
