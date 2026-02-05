@@ -31,7 +31,8 @@ export const getSoundFiles = async (): Promise<GetSoundFilesResponse> => {
 export const uploadSoundFile = async (
   file: File,
   name?: string,
-  description?: string
+  description?: string,
+  onProgress?: (percent: number) => void
 ): Promise<UploadSoundFileResponse> => {
   const formData = new FormData();
   formData.append('file', file);
@@ -41,6 +42,11 @@ export const uploadSoundFile = async (
   const response = await apiClient.post<UploadSoundFileResponse>('/sounds/upload', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
+    },
+    onUploadProgress: (event) => {
+      if (!onProgress || !event.total) return;
+      const percent = Math.round((event.loaded * 100) / event.total);
+      onProgress(percent);
     },
   });
   return response.data;

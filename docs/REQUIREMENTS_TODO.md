@@ -375,43 +375,43 @@ This document provides a detailed, phase-based task list for building the Mantri
 
 ### 7.1 Sound Files Section
 
-- [ ] Create expandable/collapsible section with "Sounds Files" heading
-- [ ] Default state: collapsed
-- [ ] Fetch data from `GET /sounds/sound_files` on expand
-- [ ] Add "Upload Sound File" button in section header (right side)
+- [x] Create expandable/collapsible section with "Sounds Files" heading
+- [x] Default state: collapsed
+- [x] Fetch data from `GET /sounds/sound_files` on expand
+- [x] Add "Upload Sound File" button in section header (right side)
 
 ### 7.2 TableAdminSoundsFiles Component
 
-- [ ] Create `src/components/tables/TableAdminSoundsFiles.tsx`
-- [ ] Display columns:
+- [x] Create `src/components/tables/TableAdminSoundsFiles.tsx`
+- [x] Display columns:
   - ID
   - Name
   - Delete button
-- [ ] Make table responsive
-- [ ] Show loading state while fetching
+- [x] Make table responsive
+- [x] Show loading state while fetching
 
 ### 7.3 ModalUploadSoundFile Component
 
-- [ ] Create `src/components/modals/ModalUploadSoundFile.tsx`
-- [ ] Open modal when "Upload Sound File" button is clicked
-- [ ] Add file input (accept only .mp3 files)
-- [ ] Add name text input (optional)
-- [ ] Add description textarea (optional)
-- [ ] Add submit button
-- [ ] Validate file type client-side
-- [ ] Show file size limit: 50MB
-- [ ] Connect to `POST /sounds/upload` endpoint (multipart/form-data)
-- [ ] Show upload progress bar
-- [ ] On success: close modal, refresh table, show success message
-- [ ] Handle errors: 400 (validation), 409 (duplicate), 413 (too large)
+- [x] Create `src/components/modals/ModalUploadSoundFile.tsx`
+- [x] Open modal when "Upload Sound File" button is clicked
+- [x] Add file input (accept only .mp3 files)
+- [x] Add name text input (optional)
+- [x] Add description textarea (optional)
+- [x] Add submit button
+- [x] Validate file type client-side
+- [x] Show file size limit: 50MB
+- [x] Connect to `POST /sounds/upload` endpoint (multipart/form-data)
+- [x] Show upload progress bar
+- [x] On success: close modal, refresh table, show success message
+- [x] Handle errors: 400 (validation), 409 (duplicate), 413 (too large)
 
 ### 7.4 Delete Sound File Functionality
 
-- [ ] Add delete button for each sound file
-- [ ] Show confirmation modal
-- [ ] Connect to `DELETE /sounds/sound_file/:id` endpoint
-- [ ] Remove from table on success
-- [ ] Handle error if sound file is in use by mantras
+- [x] Add delete button for each sound file
+- [x] Show confirmation modal
+- [x] Connect to `DELETE /sounds/sound_file/:id` endpoint
+- [x] Remove from table on success
+- [x] Handle error if sound file is in use by mantras
 
 ---
 

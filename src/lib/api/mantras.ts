@@ -16,6 +16,7 @@ export interface CreateMantraResponse {
 
 export interface GetAllMantrasResponse {
   mantras: Meditation[];
+  mantrasArray?: Meditation[];
 }
 
 export interface FavoriteMantraResponse {
@@ -33,7 +34,11 @@ export interface DeleteMantraResponse {
 export const getAllMantras = async (includePrivate: boolean = false): Promise<GetAllMantrasResponse> => {
   const url = includePrivate ? '/mantras/all?includePrivate=true' : '/mantras/all';
   const response = await apiClient.get<GetAllMantrasResponse>(url);
-  return response.data;
+  const data = response.data;
+  return {
+    ...data,
+    mantras: data.mantras ?? data.mantrasArray ?? [],
+  };
 };
 
 // POST /mantras/create
