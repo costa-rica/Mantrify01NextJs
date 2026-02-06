@@ -7,6 +7,7 @@ All endpoints require authentication AND admin status (isAdmin=true) to access.
 ## Overview
 
 Admin endpoints provide elevated access to:
+
 - View all users in the system
 - View all mantras regardless of visibility
 - Delete any mantra regardless of ownership
