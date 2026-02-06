@@ -31,12 +31,12 @@ export interface DeleteMantraResponse {
 }
 
 // GET /mantras/all
+// Authentication is optional - if provided, returns public + user's private mantras
+// If not provided, returns only public mantras
 export const getAllMantras = async (
-  includePrivate: boolean = false,
   accessToken?: string | null
 ): Promise<GetAllMantrasResponse> => {
-  const url = includePrivate ? '/mantras/all?includePrivate=true' : '/mantras/all';
-  const response = await apiClient.get<GetAllMantrasResponse>(url, {
+  const response = await apiClient.get<GetAllMantrasResponse>('/mantras/all', {
     headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined,
   });
   const data = response.data;

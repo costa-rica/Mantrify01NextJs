@@ -36,7 +36,8 @@ export default function TableMeditation() {
     dispatch(setError(null));
 
     try {
-      const response = await getAllMantras(isAuthenticated && !!accessToken, accessToken);
+      // Pass accessToken if authenticated - backend will return appropriate mantras
+      const response = await getAllMantras(isAuthenticated ? accessToken : null);
       dispatch(setMeditations(response.mantras ?? []));
     } catch (err: any) {
       const message =
@@ -50,19 +51,12 @@ export default function TableMeditation() {
     fetchMeditations();
   }, [fetchMeditations]);
 
+  // Backend already filters mantras based on authentication state:
+  // - Anonymous: only public mantras
+  // - Authenticated: public mantras + user's private mantras
   const visibleRows = useMemo(() => {
-    const safeMeditations = Array.isArray(meditations) ? meditations : [];
-    if (!isAuthenticated) {
-      return safeMeditations.filter(
-        (meditation) => meditation.visibility?.toLowerCase() === "public",
-      );
-    }
-
-    return safeMeditations.filter(
-      (meditation) =>
-        meditation.visibility?.toLowerCase() === "public" || meditation.isOwned,
-    );
-  }, [isAuthenticated, meditations]);
+    return Array.isArray(meditations) ? meditations : [];
+  }, [meditations]);
 
   const handleToggleFavorite = async (
     mantraId: number,
