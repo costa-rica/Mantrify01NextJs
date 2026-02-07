@@ -22,6 +22,7 @@ export interface Meditation {
   listenCount: number;
   isFavorite?: boolean;
   isOwned?: boolean;
+  ownerUserId?: number;
 }
 
 export interface MeditationState {
@@ -53,6 +54,17 @@ export const meditationSlice = createSlice({
         (meditation) => meditation.id !== action.payload,
       );
     },
+    updateMeditation: (
+      state,
+      action: PayloadAction<Partial<Meditation> & { id: number }>,
+    ) => {
+      const meditation = state.meditations.find(
+        (m) => m.id === action.payload.id,
+      );
+      if (meditation) {
+        Object.assign(meditation, action.payload);
+      }
+    },
     toggleFavorite: (
       state,
       action: PayloadAction<{ id: number; isFavorite: boolean }>,
@@ -77,6 +89,7 @@ export const meditationSlice = createSlice({
 export const {
   setMeditations,
   addMeditation,
+  updateMeditation,
   deleteMeditation,
   toggleFavorite,
   setLoading,

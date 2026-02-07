@@ -1,17 +1,24 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { deleteMantra, favoriteMantra, getAllMantras } from "@/lib/api/mantras";
+import {
+  deleteMantra,
+  favoriteMantra,
+  getAllMantras,
+  updateMantra,
+} from "@/lib/api/mantras";
 import AudioPlayer from "@/components/AudioPlayer";
-import ModalConfirmDelete from "@/components/modals/ModalConfirmDelete";
+import ModalMeditationDetails from "@/components/modals/ModalMeditationDetails";
 import Toast from "@/components/Toast";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   deleteMeditation,
+  updateMeditation,
   toggleFavorite,
   setError,
   setLoading,
   setMeditations,
+  Meditation,
 } from "@/store/features/meditationSlice";
 
 export default function TableMeditation() {
@@ -19,13 +26,9 @@ export default function TableMeditation() {
   const { meditations, loading, error } = useAppSelector(
     (state) => state.meditation,
   );
-  const { isAuthenticated, accessToken } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, accessToken, user } = useAppSelector((state) => state.auth);
   const [isExpanded, setIsExpanded] = useState(true);
-  const [deleteTarget, setDeleteTarget] = useState<{
-    id: number;
-    title: string;
-  } | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [selectedMeditation, setSelectedMeditation] = useState<Meditation | null>(null);
   const [toast, setToast] = useState<{
     message: string;
     variant: "success" | "error";
@@ -38,14 +41,22 @@ export default function TableMeditation() {
     try {
       // Pass accessToken if authenticated - backend will return appropriate mantras
       const response = await getAllMantras(isAuthenticated ? accessToken : null);
-      dispatch(setMeditations(response.mantras ?? []));
+      const mantras = response.mantras ?? [];
+
+      // Set isOwned flag based on ownerUserId comparison
+      const mantrasWithOwnership = mantras.map((mantra) => ({
+        ...mantra,
+        isOwned: user && mantra.ownerUserId === user.id,
+      }));
+
+      dispatch(setMeditations(mantrasWithOwnership));
     } catch (err: any) {
       const message =
         err?.response?.data?.error?.message ||
         "Unable to load meditations. Please try again.";
       dispatch(setError(message));
     }
-  }, [accessToken, dispatch, isAuthenticated]);
+  }, [accessToken, dispatch, isAuthenticated, user]);
 
   useEffect(() => {
     fetchMeditations();
@@ -73,15 +84,39 @@ export default function TableMeditation() {
     }
   };
 
-  const handleDelete = async () => {
-    if (!deleteTarget) return;
-    setIsDeleting(true);
-
+  const handleUpdate = async (
+    id: number,
+    data: { title?: string; description?: string; visibility?: "public" | "private" }
+  ) => {
     try {
-      await deleteMantra(deleteTarget.id);
-      dispatch(deleteMeditation(deleteTarget.id));
-      setToast({ message: "Meditation deleted.", variant: "success" });
-      setDeleteTarget(null);
+      const response = await updateMantra(id, data);
+      dispatch(updateMeditation({ id, ...response.mantra }));
+      setToast({ message: "Meditation updated successfully.", variant: "success" });
+      setSelectedMeditation(null);
+    } catch (err: any) {
+      const status = err?.response?.status;
+      if (status === 403) {
+        setToast({
+          message: "You can only update your own meditations.",
+          variant: "error",
+        });
+      } else if (status === 404) {
+        setToast({ message: "Meditation not found.", variant: "error" });
+      } else {
+        setToast({
+          message: "Unable to update meditation. Please try again.",
+          variant: "error",
+        });
+      }
+      throw err;
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      await deleteMantra(id);
+      dispatch(deleteMeditation(id));
+      setToast({ message: "Meditation deleted successfully.", variant: "success" });
     } catch (err: any) {
       const status = err?.response?.status;
       if (status === 403) {
@@ -97,8 +132,7 @@ export default function TableMeditation() {
           variant: "error",
         });
       }
-    } finally {
-      setIsDeleting(false);
+      throw err;
     }
   };
 
@@ -194,18 +228,13 @@ export default function TableMeditation() {
                       <th className="px-4 py-3 text-right font-semibold">
                         Listens
                       </th>
-                      {isAuthenticated && (
-                        <th className="px-4 py-3 text-right font-semibold">
-                          Delete
-                        </th>
-                      )}
                     </tr>
                   </thead>
                   <tbody>
                     {visibleRows.length === 0 && (
                       <tr>
                         <td
-                          colSpan={isAuthenticated ? 5 : 3}
+                          colSpan={isAuthenticated ? 4 : 3}
                           className="px-4 py-6 text-center text-calm-500"
                         >
                           No meditations available yet.
@@ -224,7 +253,13 @@ export default function TableMeditation() {
                           className="border-t border-calm-100 text-calm-700"
                         >
                         <td className="px-4 py-3 font-medium text-calm-900">
-                          {meditation.title}
+                          <button
+                            type="button"
+                            onClick={() => setSelectedMeditation(meditation)}
+                            className="text-left underline decoration-calm-300 underline-offset-2 transition hover:decoration-primary-500 hover:text-primary-700"
+                          >
+                            {meditation.title}
+                          </button>
                         </td>
                         <td className="px-4 py-3">
                           <AudioPlayer
@@ -260,26 +295,6 @@ export default function TableMeditation() {
                         <td className="px-4 py-3 text-right text-calm-600">
                           {listenCount}
                         </td>
-                        {isAuthenticated && (
-                          <td className="px-4 py-3 text-right">
-                            {meditation.isOwned ? (
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  setDeleteTarget({
-                                    id: meditation.id,
-                                    title: meditation.title,
-                                  })
-                                }
-                                className="rounded-full border border-red-200 px-3 py-1 text-xs font-semibold text-red-500 transition hover:border-red-300"
-                              >
-                                Delete
-                              </button>
-                            ) : (
-                              <span className="text-xs text-calm-300">—</span>
-                            )}
-                          </td>
-                        )}
                       </tr>
                       );
                     })}
@@ -290,14 +305,13 @@ export default function TableMeditation() {
           )}
         </div>
       )}
-      <ModalConfirmDelete
-        isOpen={!!deleteTarget}
-        title={`Delete ${deleteTarget?.title || "meditation"}`}
-        message="This will permanently remove this meditation from your library."
-        confirmLabel="Delete meditation"
-        isLoading={isDeleting}
-        onClose={() => setDeleteTarget(null)}
-        onConfirm={handleDelete}
+      <ModalMeditationDetails
+        isOpen={!!selectedMeditation}
+        meditation={selectedMeditation}
+        userId={user?.id ?? null}
+        onClose={() => setSelectedMeditation(null)}
+        onUpdate={handleUpdate}
+        onDelete={handleDelete}
       />
       {toast && (
         <Toast

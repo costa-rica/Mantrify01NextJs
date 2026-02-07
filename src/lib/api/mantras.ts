@@ -30,6 +30,17 @@ export interface DeleteMantraResponse {
   mantraId: number;
 }
 
+export interface UpdateMantraRequest {
+  title?: string;
+  description?: string;
+  visibility?: 'public' | 'private';
+}
+
+export interface UpdateMantraResponse {
+  message: string;
+  mantra: Meditation;
+}
+
 // GET /mantras/all
 // Authentication is optional - if provided, returns public + user's private mantras
 // If not provided, returns only public mantras
@@ -66,6 +77,18 @@ export const favoriteMantra = async (
   const trueOrFalse = isFavorite ? 'true' : 'false';
   const response = await apiClient.post<FavoriteMantraResponse>(
     `/mantras/favorite/${mantraId}/${trueOrFalse}`
+  );
+  return response.data;
+};
+
+// PATCH /mantras/update/:id
+export const updateMantra = async (
+  id: number,
+  data: UpdateMantraRequest
+): Promise<UpdateMantraResponse> => {
+  const response = await apiClient.patch<UpdateMantraResponse>(
+    `/mantras/update/${id}`,
+    data
   );
   return response.data;
 };
