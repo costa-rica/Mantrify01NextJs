@@ -41,6 +41,7 @@ export default function CreateMeditationForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [toast, setToast] = useState<{ message: string; variant: "success" | "error" } | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeRowMenu, setActiveRowMenu] = useState<number | null>(null);
   const maxDescriptionLength = 300;
 
   useEffect(() => {
@@ -318,88 +319,134 @@ export default function CreateMeditationForm() {
       {isExpanded && (
         <div className="rounded-3xl border border-dashed border-calm-200 bg-white/70 p-6 shadow-sm">
           <div>
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-display font-semibold text-calm-900">Meditation Rows</h3>
-              <button
-                type="button"
-                onClick={handleAddRow}
-                disabled={isSubmitting}
-                className="rounded-full border border-primary-200 px-4 py-2 text-xs font-semibold text-primary-700 transition hover:border-primary-300"
-              >
-                Add Row
-              </button>
-            </div>
+            <h3 className="text-lg font-display font-semibold text-calm-900 mb-4">Meditation Rows</h3>
 
             {soundsError && (
               <p className="mt-2 text-xs text-red-500">{soundsError}</p>
             )}
 
-            <div className="mt-4 space-y-3">
-              {rows.map((row, index) => (
-                <div
-                  key={row.id}
-                  className="flex flex-col gap-4 rounded-2xl border border-calm-100 bg-white px-4 py-4"
-                >
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <span className="flex h-8 w-8 items-center justify-center rounded-full bg-calm-100 text-xs font-semibold text-calm-600">
+            {rows.length > 0 ? (
+              <div className="mt-4 space-y-2">
+                {/* Header Row */}
+                <div className="grid grid-cols-[2.5rem_5rem_1fr_3rem_3rem_8rem] gap-2 px-2 pb-2 border-b border-calm-200">
+                  <div className="text-xs font-semibold text-calm-600">#</div>
+                  <div className="text-xs font-semibold text-calm-600">Type</div>
+                  <div className="text-xs font-semibold text-calm-600">Text</div>
+                  <div className="text-xs font-semibold text-calm-600">Speed</div>
+                  <div className="text-xs font-semibold text-calm-600">Pause</div>
+                  <div className="text-xs font-semibold text-calm-600">Sound File</div>
+                </div>
+
+                {/* Data Rows */}
+                {rows.map((row, index) => (
+                  <div
+                    key={row.id}
+                    className="grid grid-cols-[2.5rem_5rem_1fr_3rem_3rem_8rem] gap-2 items-start relative"
+                  >
+                    {/* Row Number - Clickable */}
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() => setActiveRowMenu(activeRowMenu === row.id ? null : row.id)}
+                        disabled={isSubmitting}
+                        className="flex h-6 w-6 items-center justify-center rounded-full bg-calm-400 text-xs font-semibold text-white transition hover:bg-calm-500 disabled:cursor-not-allowed"
+                      >
                         {row.id}
-                      </span>
-                      <div>
-                        <p className="text-sm font-semibold text-calm-700">Row {row.id}</p>
-                        <p className="text-xs text-calm-400">Select the row type</p>
-                      </div>
+                      </button>
+
+                      {/* Actions Popup */}
+                      {activeRowMenu === row.id && (
+                        <>
+                          <div
+                            className="fixed inset-0 z-10"
+                            onClick={() => setActiveRowMenu(null)}
+                          />
+                          <div className="absolute top-8 left-0 z-20 bg-white border border-calm-300 rounded-lg shadow-lg py-1 min-w-[9rem]">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                moveRow(row.id, "up");
+                                setActiveRowMenu(null);
+                              }}
+                              disabled={index === 0}
+                              className="w-full px-3 py-2 text-left text-xs text-calm-700 hover:bg-calm-50 disabled:text-calm-300 disabled:cursor-not-allowed"
+                            >
+                              Move Up
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                moveRow(row.id, "down");
+                                setActiveRowMenu(null);
+                              }}
+                              disabled={index === rows.length - 1}
+                              className="w-full px-3 py-2 text-left text-xs text-calm-700 hover:bg-calm-50 disabled:text-calm-300 disabled:cursor-not-allowed"
+                            >
+                              Move Down
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                handleDeleteRow(row.id);
+                                setActiveRowMenu(null);
+                              }}
+                              className="w-full px-3 py-2 text-left text-xs text-red-600 hover:bg-red-50"
+                            >
+                              Delete Row
+                            </button>
+                          </div>
+                        </>
+                      )}
                     </div>
+
+                    {/* Type Select */}
                     <select
                       value={row.type}
-                      onChange={(event) =>
-                        (() => {
-                          updateRow(row.id, {
-                            type: event.target.value as "text" | "pause" | "sound",
-                            text: "",
-                            speed: "",
-                            pauseDuration: "",
-                            soundFile: "",
-                          });
-                          setRowErrors((prev) => ({
-                            ...prev,
-                            [row.id]: {},
-                          }));
-                        })()
-                      }
+                      onChange={(event) => {
+                        updateRow(row.id, {
+                          type: event.target.value as "text" | "pause" | "sound",
+                          text: "",
+                          speed: "",
+                          pauseDuration: "",
+                          soundFile: "",
+                        });
+                        setRowErrors((prev) => ({
+                          ...prev,
+                          [row.id]: {},
+                        }));
+                      }}
                       disabled={isSubmitting}
-                      className="rounded-full border border-calm-200 bg-white px-3 py-2 text-xs font-semibold text-calm-700"
+                      className="rounded border border-calm-200 bg-white px-2 py-1 text-xs text-calm-700 outline-none focus:border-primary-300 focus:ring-1 focus:ring-primary-100"
                     >
                       <option value="text">Text</option>
                       <option value="pause">Pause</option>
                       <option value="sound">Sound File</option>
                     </select>
-                  </div>
 
-                  {row.type === "text" && (
-                    <div className="grid gap-3 md:grid-cols-[2fr_1fr]">
-                      <div>
-                        <label className="text-xs font-semibold text-calm-600">Text</label>
-                        <textarea
-                          rows={2}
-                          value={row.text}
-                          onChange={(event) => {
-                            updateRow(row.id, { text: event.target.value });
-                            if (rowErrors[row.id]?.text) {
-                              clearRowError(row.id, "text");
-                            }
-                          }}
-                          className={`mt-2 w-full rounded-2xl border px-3 py-2 text-xs text-calm-900 outline-none transition focus:border-primary-300 focus:ring-2 focus:ring-primary-100 ${
-                            rowErrors[row.id]?.text ? "border-red-300" : "border-calm-200"
-                          }`}
-                          placeholder="Begin with a calming phrase..."
-                        />
-                        {rowErrors[row.id]?.text && (
-                          <p className="mt-1 text-xs text-red-500">{rowErrors[row.id]?.text}</p>
-                        )}
-                      </div>
-                      <div>
-                        <label className="text-xs font-semibold text-calm-600">Speed (0.7-1.3)</label>
+                    {/* Text Column */}
+                    <div className="flex flex-col">
+                      <textarea
+                        rows={2}
+                        value={row.text}
+                        onChange={(event) => {
+                          updateRow(row.id, { text: event.target.value });
+                          if (rowErrors[row.id]?.text) {
+                            clearRowError(row.id, "text");
+                          }
+                        }}
+                        disabled={row.type !== "text" || isSubmitting}
+                        className={`w-full rounded border px-2 py-1 text-xs text-calm-900 outline-none transition focus:border-primary-300 focus:ring-1 focus:ring-primary-100 disabled:bg-calm-50 disabled:text-calm-400 disabled:cursor-not-allowed ${
+                          rowErrors[row.id]?.text ? "border-red-300" : "border-calm-200"
+                        }`}
+                        placeholder={row.type === "text" ? "Begin with a calming phrase..." : ""}
+                      />
+                      {rowErrors[row.id]?.text && (
+                        <p className="mt-1 text-xs text-red-500">{rowErrors[row.id]?.text}</p>
+                      )}
+                    </div>
+
+                    {/* Speed Column */}
+                    <div className="flex flex-col">
                       <input
                         type="number"
                         step="0.1"
@@ -412,22 +459,19 @@ export default function CreateMeditationForm() {
                             clearRowError(row.id, "speed");
                           }
                         }}
-                        disabled={isSubmitting}
-                        className={`mt-2 w-full rounded-2xl border px-3 py-2 text-xs text-calm-900 outline-none transition focus:border-primary-300 focus:ring-2 focus:ring-primary-100 ${
+                        disabled={row.type !== "text" || isSubmitting}
+                        className={`w-full rounded border px-1 py-1 text-xs text-calm-900 outline-none transition focus:border-primary-300 focus:ring-1 focus:ring-primary-100 disabled:bg-calm-50 disabled:text-calm-400 disabled:cursor-not-allowed ${
                           rowErrors[row.id]?.speed ? "border-red-300" : "border-calm-200"
                         }`}
                         placeholder="1.0"
                       />
-                        {rowErrors[row.id]?.speed && (
-                          <p className="mt-1 text-xs text-red-500">{rowErrors[row.id]?.speed}</p>
-                        )}
-                      </div>
+                      {rowErrors[row.id]?.speed && (
+                        <p className="mt-1 text-xs text-red-500">{rowErrors[row.id]?.speed}</p>
+                      )}
                     </div>
-                  )}
 
-                  {row.type === "pause" && (
-                    <div>
-                      <label className="text-xs font-semibold text-calm-600">Duration (seconds)</label>
+                    {/* Pause Column */}
+                    <div className="flex flex-col">
                       <input
                         type="number"
                         step="0.1"
@@ -439,23 +483,19 @@ export default function CreateMeditationForm() {
                             clearRowError(row.id, "pauseDuration");
                           }
                         }}
-                        disabled={isSubmitting}
-                        className={`mt-2 w-full rounded-2xl border px-3 py-2 text-xs text-calm-900 outline-none transition focus:border-primary-300 focus:ring-2 focus:ring-primary-100 ${
+                        disabled={row.type !== "pause" || isSubmitting}
+                        className={`w-full rounded border px-1 py-1 text-xs text-calm-900 outline-none transition focus:border-primary-300 focus:ring-1 focus:ring-primary-100 disabled:bg-calm-50 disabled:text-calm-400 disabled:cursor-not-allowed ${
                           rowErrors[row.id]?.pauseDuration ? "border-red-300" : "border-calm-200"
                         }`}
                         placeholder="5"
                       />
                       {rowErrors[row.id]?.pauseDuration && (
-                        <p className="mt-1 text-xs text-red-500">
-                          {rowErrors[row.id]?.pauseDuration}
-                        </p>
+                        <p className="mt-1 text-xs text-red-500">{rowErrors[row.id]?.pauseDuration}</p>
                       )}
                     </div>
-                  )}
 
-                  {row.type === "sound" && (
-                    <div>
-                      <label className="text-xs font-semibold text-calm-600">Select Sound File</label>
+                    {/* Sound File Column */}
+                    <div className="flex flex-col">
                       <select
                         value={row.soundFile}
                         onChange={(event) => {
@@ -464,13 +504,13 @@ export default function CreateMeditationForm() {
                             clearRowError(row.id, "soundFile");
                           }
                         }}
-                        disabled={soundsLoading || isSubmitting}
-                        className={`mt-2 w-full rounded-2xl border px-3 py-2 text-xs text-calm-900 outline-none transition focus:border-primary-300 focus:ring-2 focus:ring-primary-100 ${
+                        disabled={row.type !== "sound" || soundsLoading || isSubmitting}
+                        className={`w-full rounded border px-2 py-1 text-xs text-calm-900 outline-none transition focus:border-primary-300 focus:ring-1 focus:ring-primary-100 disabled:bg-calm-50 disabled:text-calm-400 disabled:cursor-not-allowed ${
                           rowErrors[row.id]?.soundFile ? "border-red-300" : "border-calm-200"
                         }`}
                       >
                         <option value="">
-                          {soundsLoading ? "Loading sound files..." : "Select a sound file"}
+                          {soundsLoading ? "Loading..." : "Select..."}
                         </option>
                         {soundFiles.map((sound) => (
                           <option key={sound.filename} value={sound.filename}>
@@ -482,40 +522,39 @@ export default function CreateMeditationForm() {
                         <p className="mt-1 text-xs text-red-500">{rowErrors[row.id]?.soundFile}</p>
                       )}
                     </div>
-                  )}
+                  </div>
+                ))}
 
-                  <div className="flex flex-wrap items-center gap-2">
+                {/* Add Row Button - Aligned to right of Sound File column */}
+                <div className="grid grid-cols-[2.5rem_5rem_1fr_3rem_3rem_8rem] gap-2 items-start">
+                  <div className="col-start-6 flex justify-end">
                     <button
                       type="button"
-                      onClick={() => moveRow(row.id, "up")}
-                      disabled={index === 0 || isSubmitting}
-                      className="rounded-full border border-calm-200 px-3 py-1 text-xs font-semibold text-calm-600 transition hover:border-primary-200 disabled:cursor-not-allowed disabled:text-calm-300"
-                    >
-                      Move Up
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => moveRow(row.id, "down")}
-                      disabled={index === rows.length - 1 || isSubmitting}
-                      className="rounded-full border border-calm-200 px-3 py-1 text-xs font-semibold text-calm-600 transition hover:border-primary-200 disabled:cursor-not-allowed disabled:text-calm-300"
-                    >
-                      Move Down
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteRow(row.id)}
+                      onClick={handleAddRow}
                       disabled={isSubmitting}
-                      className="rounded-full border border-red-200 px-3 py-1 text-xs font-semibold text-red-500 transition hover:border-red-300 disabled:cursor-not-allowed disabled:border-red-100 disabled:text-red-300"
+                      className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-calm-300 bg-green-500 text-white transition hover:bg-green-600 hover:border-calm-400 disabled:cursor-not-allowed disabled:bg-green-300"
                     >
-                      Delete Row
+                      <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v14m-7-7h14" />
+                      </svg>
                     </button>
                   </div>
                 </div>
-              ))}
-            </div>
-
-            {rows.length === 0 && (
-              <p className="mt-4 text-sm text-calm-500">Add a row to begin building your sequence.</p>
+              </div>
+            ) : (
+              <div className="mt-4 flex items-center justify-between">
+                <p className="text-sm text-calm-500">Add a row to begin building your sequence.</p>
+                <button
+                  type="button"
+                  onClick={handleAddRow}
+                  disabled={isSubmitting}
+                  className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-calm-300 bg-green-500 text-white transition hover:bg-green-600 hover:border-calm-400 disabled:cursor-not-allowed disabled:bg-green-300"
+                >
+                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v14m-7-7h14" />
+                  </svg>
+                </button>
+              </div>
             )}
           </div>
 
