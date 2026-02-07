@@ -6,6 +6,7 @@ import { getSoundFiles } from "@/lib/api/sounds";
 import Toast from "@/components/Toast";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { setMeditations } from "@/store/features/meditationSlice";
+import { showLoading, hideLoading } from "@/store/features/uiSlice";
 import { getAllMantras } from "@/lib/api/mantras";
 import { validateMeditationTitle, validatePauseDuration, validateSpeed } from "@/lib/utils/validation";
 import ModalConfirmCreateMeditation from "@/components/modals/ModalConfirmCreateMeditation";
@@ -202,6 +203,7 @@ export default function CreateMeditationForm() {
     }
 
     setIsSubmitting(true);
+    dispatch(showLoading("Creating your meditation..."));
     try {
       await createMantra({
         title: title.trim(),
@@ -245,6 +247,7 @@ export default function CreateMeditationForm() {
       setToast({ message, variant: "error" });
     } finally {
       setIsSubmitting(false);
+      dispatch(hideLoading());
     }
   };
 
