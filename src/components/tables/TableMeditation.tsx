@@ -46,7 +46,7 @@ export default function TableMeditation() {
       // Set isOwned flag based on ownerUserId comparison
       const mantrasWithOwnership = mantras.map((mantra) => ({
         ...mantra,
-        isOwned: user && mantra.ownerUserId === user.id,
+        isOwned: user ? mantra.ownerUserId === user.id : undefined,
       }));
 
       dispatch(setMeditations(mantrasWithOwnership));
@@ -90,7 +90,7 @@ export default function TableMeditation() {
   ) => {
     try {
       const response = await updateMantra(id, data);
-      dispatch(updateMeditation({ id, ...response.mantra }));
+      dispatch(updateMeditation(response.mantra));
       setToast({ message: "Meditation updated successfully.", variant: "success" });
       setSelectedMeditation(null);
     } catch (err: any) {

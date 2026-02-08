@@ -8,6 +8,7 @@ export interface AdminUser {
   isEmailVerified: boolean;
   emailVerifiedAt: string | null;
   isAdmin: boolean;
+  hasPublicMantras: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -55,8 +56,13 @@ export const getUsers = async (): Promise<GetUsersResponse> => {
 };
 
 // DELETE /admin/users/:id
-export const deleteUser = async (id: number): Promise<DeleteUserResponse> => {
-  const response = await apiClient.delete<DeleteUserResponse>(`/admin/users/${id}`);
+export const deleteUser = async (
+  id: number,
+  options?: { savePublicMantrasAsBenevolentUser?: boolean }
+): Promise<DeleteUserResponse> => {
+  const response = await apiClient.delete<DeleteUserResponse>(`/admin/users/${id}`, {
+    data: options,
+  });
   return response.data;
 };
 

@@ -9,6 +9,7 @@ import TableAdminQueuer from "@/components/tables/TableAdminQueuer";
 import TableAdminDatabase from "@/components/tables/TableAdminDatabase";
 import ModalUploadSoundFile from "@/components/modals/ModalUploadSoundFile";
 import ModalConfirmDelete from "@/components/modals/ModalConfirmDelete";
+import ModalConfirmDeleteUser from "@/components/modals/ModalConfirmDeleteUser";
 import Toast from "@/components/Toast";
 import {
   deleteMantra,
@@ -206,7 +207,7 @@ export default function AdminPage() {
     fetchBackups();
   }, [fetchBackups]);
 
-  const handleDeleteConfirm = async () => {
+  const handleDeleteConfirm = async (savePublicMantras: boolean) => {
     if (!deleteTarget) return;
     if (deleteTarget.id === user?.id) {
       setToast({
@@ -219,7 +220,10 @@ export default function AdminPage() {
 
     setIsDeleting(true);
     try {
-      await deleteUser(deleteTarget.id);
+      const options = deleteTarget.hasPublicMantras
+        ? { savePublicMantrasAsBenevolentUser: savePublicMantras }
+        : undefined;
+      await deleteUser(deleteTarget.id, options);
       setUsers((prev) => prev.filter((item) => item.id !== deleteTarget.id));
       setToast({ message: "User deleted.", variant: "success" });
       setDeleteTarget(null);
@@ -876,11 +880,9 @@ export default function AdminPage() {
         </div>
       </main>
 
-      <ModalConfirmDelete
+      <ModalConfirmDeleteUser
         isOpen={!!deleteTarget}
-        title={`Delete ${deleteTarget?.email || "user"}`}
-        message="This will permanently remove the user account."
-        confirmLabel="Delete user"
+        user={deleteTarget}
         isLoading={isDeleting}
         onClose={() => setDeleteTarget(null)}
         onConfirm={handleDeleteConfirm}

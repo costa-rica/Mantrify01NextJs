@@ -8,7 +8,7 @@ Creates a new user account and sends a verification email.
 
 - Authentication: Not required
 - Email addresses are normalized to lowercase
-- Password must be at least 6 characters
+- Password must be at least 4 characters
 - User account is created with `isEmailVerified: false`
 - Verification token expires in 30 minutes
 
@@ -17,7 +17,7 @@ Creates a new user account and sends a verification email.
 Request body:
 
 - `email` (string, required): User's email address
-- `password` (string, required): User's password (minimum 6 characters)
+- `password` (string, required): User's password (minimum 4 characters)
 
 ### Sample Request
 
@@ -71,7 +71,7 @@ curl --location 'http://localhost:3000/users/register' \
 {
   "error": {
     "code": "VALIDATION_ERROR",
-    "message": "Password must be at least 6 characters long",
+    "message": "Password must be at least 4 characters long",
     "status": 400
   }
 }
@@ -204,10 +204,21 @@ curl --location 'http://localhost:3000/users/login' \
   "user": {
     "id": 1,
     "email": "user@example.com",
-    "isAdmin": false
+    "isAdmin": false,
+    "hasPublicMantras": true
   }
 }
 ```
+
+### Response Fields
+
+- `message` (string): Success message
+- `accessToken` (string): JWT token for authenticated requests
+- `user` (object): User information
+  - `id` (number): User ID
+  - `email` (string): User email address
+  - `isAdmin` (boolean): Whether user has admin privileges
+  - `hasPublicMantras` (boolean): Whether user has any mantras with visibility set to "public"
 
 ### Error Responses
 
@@ -411,3 +422,61 @@ The access token returned from login should be included in the `Authorization` h
 curl --location 'http://localhost:3000/mantras/list' \
 --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
 ```
+
+## DELETE /users/me
+
+Self-service endpoint for users to delete their own account.
+
+- Authentication: Required (JWT token)
+- User can only delete their own account
+- Supports optional benevolent user conversion to preserve public mantras
+- User's JWT token becomes invalid after deletion
+- Full documentation available in [deleteUser.md](deleteUser.md)
+
+### Parameters
+
+Request body:
+
+```json
+{
+  "savePublicMantrasAsBenevolentUser": false // optional, boolean, default: false
+}
+```
+
+### Sample Request
+
+```bash
+curl --location --request DELETE 'http://localhost:3000/users/me' \
+--header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "savePublicMantrasAsBenevolentUser": false
+}'
+```
+
+### Sample Response
+
+Success (200):
+
+```json
+{
+  "message": "Your account has been deleted successfully",
+  "userId": 12,
+  "mantrasDeleted": 5,
+  "elevenLabsFilesDeleted": 15,
+  "benevolentUserCreated": false
+}
+```
+
+### Notes
+
+- After deletion, the user's JWT token becomes invalid
+- If `savePublicMantrasAsBenevolentUser: true`, public mantras are preserved and user is converted to benevolent user
+- Benevolent users cannot login (email is changed to `BenevolentUser{userId}@go-lightly.love`)
+- This operation cannot be undone
+- See [deleteUser.md](deleteUser.md) for complete documentation including:
+  - What gets deleted
+  - Benevolent user conversion details
+  - Error responses
+  - Edge cases
+  - Implementation details
